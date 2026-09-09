@@ -19,7 +19,7 @@
 
   const msg = (text, isError=false) => {
     status.textContent = text;
-    status.classList.toggle('account-error', isError);
+    status.style.color = isError ? '#ff8e8e' : '';
   };
 
   async function refresh() {
@@ -103,6 +103,17 @@
     }
   };
 
+  async function autoBackup() {
+    try {
+      if (await cloud().session()) await cloud().pushLocal();
+    } catch (e) {
+      console.error('Fortify cloud backup failed', e);
+    }
+  }
+
+  setInterval(autoBackup, 15000);
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') autoBackup(); });
+  window.addEventListener('pagehide', autoBackup);
   cloud().client.auth.onAuthStateChange(() => setTimeout(refresh, 0));
   refresh();
 })();
