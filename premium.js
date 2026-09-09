@@ -1,14 +1,13 @@
 (() => {
-  const KEY='fortify_mvp_v1';
-  const PREF='fortify_plus_prefs_v1';
-  const $=s=>document.querySelector(s);
-  const today=()=>new Date().toISOString().slice(0,10);
+  if (window.__FORTIFY_PREMIUM_LOADED) return;
+  window.__FORTIFY_PREMIUM_LOADED = true;
+  const KEY='fortify_mvp_v1', PREF='fortify_plus_prefs_v1';
+  const $=s=>document.querySelector(s), today=()=>new Date().toISOString().slice(0,10);
   const parse=()=>{try{return JSON.parse(localStorage.getItem(KEY)||'{}')}catch{return {}}};
   const prefs=()=>{try{return JSON.parse(localStorage.getItem(PREF)||'{}')}catch{return {}}};
   const savePrefs=p=>localStorage.setItem(PREF,JSON.stringify(p));
   const daysAgo=n=>{const d=new Date();d.setDate(d.getDate()-n);return d.toISOString().slice(0,10)};
   const active=()=>!!window.FORTIFY_PLUS_ACTIVE;
-
   const devotionals=[
     ['Discipline before desire','Freedom grows when the next right action matters more than the strongest current feeling. Ask God for strength for the next ten minutes, not the next ten years.','2 Timothy 1:7'],
     ['Guard the doorway','Most failures begin earlier than the final decision. Notice the first doorway: boredom, isolation, scrolling, fatigue, resentment. Close that doorway sooner.','Proverbs 4:23'],
@@ -18,56 +17,17 @@
     ['Bring it into the light','Secrecy strengthens compulsive habits. Safe, wise accountability weakens isolation and makes the next good choice easier.','James 5:16'],
     ['Win today','You do not need to solve your whole future tonight. Faithfulness today is enough. Stack one clean day onto another.','Matthew 6:34']
   ];
-
-  function inject(){
-    const progress=$('#progressView');
-    if(progress&&!$('#plusHistoryCard')) progress.insertAdjacentHTML('beforeend',`<div class="card" id="plusHistoryCard" data-plus-feature="90-day history"><div class="eyebrow">FORTIFY+ INSIGHTS</div><div class="section-title">30 / 60 / 90-day history</div><p class="muted">See whether your momentum is improving over time.</p><div id="plusHistory"></div></div>`);
-    const faith=$('#faithView');
-    if(faith&&!$('#plusDevotionalCard')) faith.insertAdjacentHTML('afterbegin',`<div class="card" id="plusDevotionalCard" data-plus-feature="Full devotionals"><div id="plusDevotional"></div></div>`);
-    const profile=$('#profileView');
-    if(profile&&!$('#plusToolsCard')) {
-      const plus=$('#plusCard');
-      const html=`<div class="card" id="plusToolsCard" data-plus-feature="Accountability and reminders"><div class="eyebrow">FORTIFY+ TOOLS</div><div class="section-title">Accountability</div><p class="muted">Keep one trusted person easy to reach. Fortify never sends them your journal.</p><label>Name</label><input id="accountabilityName" placeholder="Accountability partner"><label>Contact</label><input id="accountabilityContact" placeholder="Phone or email"><div class="grid-2"><button class="primary compact" id="saveAccountability">Save</button><button class="gold compact" id="copyCheckin">Copy check-in</button></div><hr class="soft-rule"><div class="section-title">Daily focus reminder</div><p class="muted">An in-app reminder appears after this time when you open Fortify. System push reminders come later.</p><input id="reminderTime" type="time" value="21:00"><button class="primary compact" id="saveReminder">Save reminder</button><div id="reminderDue" class="reminder-due" hidden><b>Daily check-in due</b><span>Take 30 seconds to review the day before you drift into autopilot.</span><button class="gold compact" id="markReminderDone">Mark done</button></div></div>`;
-      if(plus) plus.insertAdjacentHTML('afterend',html); else profile.insertAdjacentHTML('beforeend',html);
-    }
-  }
-
-  function renderHistory(){
-    const root=$('#plusHistory'); if(!root)return;
-    const d=parse(), rel=(d.relapses||[]), urges=(d.urges||[]), checks=(d.checkins||[]);
-    const windows=[30,60,90].map(days=>{
-      const cut=daysAgo(days-1), r=rel.filter(x=>x.date>=cut).length, u=urges.filter(x=>x.date>=cut).length, won=urges.filter(x=>x.date>=cut&&x.overcome).length, c=checks.filter(x=>x.date>=cut).length;
-      return {days,clean:Math.max(0,days-r),rate:Math.round(Math.max(0,days-r)/days*100),urges:u,won,checks:c};
-    });
-    root.innerHTML=windows.map(x=>`<div class="history-row"><div><b>${x.days} days</b><small>${x.checks} check-ins</small></div><div><b>${x.clean}</b><small>clean</small></div><div><b>${x.rate}%</b><small>victory</small></div><div><b>${x.won}/${x.urges}</b><small>urges won</small></div></div>`).join('');
-  }
-
-  function renderDevotional(){
-    const root=$('#plusDevotional'); if(!root)return;
-    const start=new Date(new Date().getFullYear(),0,0), day=Math.floor((new Date()-start)/86400000), x=devotionals[day%devotionals.length];
-    root.innerHTML=`<div class="eyebrow">FORTIFY+ DEVOTIONAL</div><h3>${x[0]}</h3><p>${x[1]}</p><div class="ref">${x[2]}</div><textarea id="devotionalNote" rows="3" placeholder="What is one action you will take today?"></textarea><button class="primary compact" id="saveDevotionalNote">Save reflection</button>`;
-    $('#saveDevotionalNote').onclick=()=>{if(!active())return;const text=$('#devotionalNote').value.trim();if(!text)return;const d=parse();d.journal=d.journal||[];d.journal.push({date:today(),ts:Date.now(),text:`Devotional reflection — ${x[0]}\n${text}`});localStorage.setItem(KEY,JSON.stringify(d));$('#devotionalNote').value='';alert('Reflection saved to your journal.')};
-  }
-
-  function renderAccountability(){
-    const p=prefs();
-    if($('#accountabilityName')) $('#accountabilityName').value=p.accountabilityName||'';
-    if($('#accountabilityContact')) $('#accountabilityContact').value=p.accountabilityContact||'';
-    if($('#reminderTime')) $('#reminderTime').value=p.reminderTime||'21:00';
-    const due=$('#reminderDue');
-    if(due){const hm=new Date().toTimeString().slice(0,5),last=p.lastReminderDate||'';due.hidden=!(active()&&p.reminderTime&&hm>=p.reminderTime&&last!==today())}
-  }
-
+  function style(){if($('#premiumStyles'))return;const s=document.createElement('style');s.id='premiumStyles';s.textContent='.history-row{display:grid;grid-template-columns:1.2fr repeat(3,1fr);gap:8px;padding:13px 0;border-bottom:1px solid var(--line);text-align:center}.history-row>div:first-child{text-align:left}.history-row b,.history-row small{display:block}.history-row small{color:var(--muted);font-size:10px;margin-top:3px}.soft-rule{border:0;border-top:1px solid var(--line);margin:20px 0}.reminder-due,.premium-status{margin-top:12px;padding:12px;border:1px solid #5a4a28;border-radius:13px;background:#17140d;color:var(--gold2)}.reminder-due span{display:block;color:var(--muted);margin:6px 0}.premium-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}@media(max-width:420px){.history-row{grid-template-columns:1.3fr 1fr 1fr}.history-row>div:last-child{display:none}.premium-actions{grid-template-columns:1fr}}';document.head.appendChild(s)}
+  function inject(){style();const progress=$('#progressView');if(progress&&!$('#plusHistoryCard'))progress.insertAdjacentHTML('beforeend','<div class="card" id="plusHistoryCard" data-plus-feature="90-day history"><div class="eyebrow">FORTIFY+ INSIGHTS</div><div class="section-title">30 / 60 / 90-day history</div><p class="muted">See whether your momentum is improving over time.</p><div id="plusHistory"></div></div>');const faith=$('#faithView');if(faith&&!$('#plusDevotionalCard'))faith.insertAdjacentHTML('afterbegin','<div class="card" id="plusDevotionalCard" data-plus-feature="Full devotionals"><div id="plusDevotional"></div></div>');const profile=$('#profileView');if(profile&&!$('#plusToolsCard')){const plus=$('#plusCard');const html='<div class="card" id="plusToolsCard" data-plus-feature="Accountability and reminders"><div class="eyebrow">FORTIFY+ TOOLS</div><div class="section-title">Accountability</div><p class="muted">Keep one trusted person easy to reach. Fortify never sends them your journal.</p><label>Name</label><input id="accountabilityName" placeholder="Accountability partner"><label>Contact</label><input id="accountabilityContact" placeholder="Phone or email"><div class="premium-actions"><button class="primary compact" id="saveAccountability">Save</button><button class="gold compact" id="copyCheckin">Copy check-in</button></div><hr class="soft-rule"><div class="section-title">Daily reminder</div><p class="muted">Choose a time, then enable push notifications on your iPhone Home Screen app.</p><input id="reminderTime" type="time" value="21:00"><button class="primary compact" id="saveReminder">Save reminder time</button><div id="reminderDue" class="reminder-due" hidden><b>Daily check-in due</b><span>Take 30 seconds to review the day before you drift into autopilot.</span><button class="gold compact" id="markReminderDone">Mark done</button></div><div id="pushStatus" class="premium-status">Checking push support…</div><div class="premium-actions"><button class="gold compact" id="pushEnableBtn">Enable push</button><button class="primary compact" id="pushTestBtn">Send test</button></div></div>';if(plus)plus.insertAdjacentHTML('afterend',html);else profile.insertAdjacentHTML('beforeend',html)}}
+  function renderHistory(){const root=$('#plusHistory');if(!root)return;const d=parse(),rel=d.relapses||[],urges=d.urges||[],checks=d.checkins||[];root.innerHTML=[30,60,90].map(days=>{const cut=daysAgo(days-1),r=rel.filter(x=>x.date>=cut).length,u=urges.filter(x=>x.date>=cut).length,won=urges.filter(x=>x.date>=cut&&x.overcome).length,c=checks.filter(x=>x.date>=cut).length,clean=Math.max(0,days-r);return `<div class="history-row"><div><b>${days} days</b><small>${c} check-ins</small></div><div><b>${clean}</b><small>clean</small></div><div><b>${Math.round(clean/days*100)}%</b><small>victory</small></div><div><b>${won}/${u}</b><small>urges won</small></div></div>`}).join('')}
+  function renderDevotional(){const root=$('#plusDevotional');if(!root)return;const start=new Date(new Date().getFullYear(),0,0),day=Math.floor((new Date()-start)/86400000),x=devotionals[day%devotionals.length];root.innerHTML=`<div class="eyebrow">FORTIFY+ DEVOTIONAL</div><h3>${x[0]}</h3><p>${x[1]}</p><div class="ref">${x[2]}</div><textarea id="devotionalNote" rows="3" placeholder="What is one action you will take today?"></textarea><button class="primary compact" id="saveDevotionalNote">Save reflection</button>`;$('#saveDevotionalNote').onclick=()=>{if(!active())return;const text=$('#devotionalNote').value.trim();if(!text)return;const d=parse();d.journal=d.journal||[];d.journal.push({date:today(),ts:Date.now(),text:`Devotional reflection — ${x[0]}\n${text}`});localStorage.setItem(KEY,JSON.stringify(d));$('#devotionalNote').value='';alert('Reflection saved to your journal.')}}
+  function renderAccountability(){const p=prefs();if($('#accountabilityName'))$('#accountabilityName').value=p.accountabilityName||'';if($('#accountabilityContact'))$('#accountabilityContact').value=p.accountabilityContact||'';if($('#reminderTime'))$('#reminderTime').value=p.reminderTime||'21:00';const due=$('#reminderDue');if(due){const hm=new Date().toTimeString().slice(0,5),last=p.lastReminderDate||'';due.hidden=!(active()&&p.reminderTime&&hm>=p.reminderTime&&last!==today())}}
   function bind(){
     $('#saveAccountability')?.addEventListener('click',()=>{if(!active())return;const p=prefs();p.accountabilityName=$('#accountabilityName').value.trim();p.accountabilityContact=$('#accountabilityContact').value.trim();savePrefs(p);alert('Accountability contact saved on this device.')});
     $('#copyCheckin')?.addEventListener('click',async()=>{if(!active())return;const streak=$('#streakDays')?.textContent||'0',msg=`Fortify check-in: ${streak} day streak. I’m staying intentional today. Please check in with me when you can.`;try{await navigator.clipboard.writeText(msg);alert('Check-in message copied.')}catch{prompt('Copy this message:',msg)}});
-    $('#saveReminder')?.addEventListener('click',()=>{if(!active())return;const p=prefs();p.reminderTime=$('#reminderTime').value;p.lastReminderDate='';savePrefs(p);renderAccountability();alert('Daily focus reminder saved.')});
+    $('#saveReminder')?.addEventListener('click',async()=>{if(!active())return;const p=prefs();p.reminderTime=$('#reminderTime').value;p.lastReminderDate='';savePrefs(p);renderAccountability();await window.FortifyPush?.saveTime?.(p.reminderTime);alert('Reminder time saved.')});
     $('#markReminderDone')?.addEventListener('click',()=>{const p=prefs();p.lastReminderDate=today();savePrefs(p);renderAccountability()});
   }
-
   function refresh(){renderHistory();renderDevotional();renderAccountability()}
-  inject();bind();refresh();
-  window.addEventListener('fortifypluschange',refresh);
-  window.addEventListener('storage',refresh);
-  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')refresh()});
+  inject();bind();refresh();window.addEventListener('fortifypluschange',refresh);window.addEventListener('storage',refresh);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')refresh()});
 })();
