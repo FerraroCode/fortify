@@ -74,9 +74,10 @@
     return { session: s, subscription: data };
   }
 
-  function checkoutUrl(base, userId) {
+  function checkoutUrl(base, userId, email) {
     const u = new URL(base);
     u.searchParams.set('client_reference_id', userId);
+    if (email) u.searchParams.set('prefilled_email', email);
     return u.toString();
   }
 
@@ -88,7 +89,7 @@
         $('#accountEmail')?.focus();
         return;
       }
-      location.href = checkoutUrl(base, s.user.id);
+      location.href = checkoutUrl(base, s.user.id, s.user.email || '');
     } catch (e) { setStatus(e.message || 'Could not start checkout.'); }
   }
 
