@@ -3,6 +3,7 @@
   const YEARLY_LINK = 'https://buy.stripe.com/test_4gM6oH5X3aKJ1Hf70X0Ny01';
   const PORTAL_LINK = 'https://billing.stripe.com/p/login/test_28EcN5dpvg535Xv4SP0Ny00';
   const $ = s => document.querySelector(s);
+  const $$ = s => [...document.querySelectorAll(s)];
   const cloud = () => window.FortifyCloud;
   const statusEl = $('#plusStatus');
   const monthlyBtn = $('#upgradeBtn');
@@ -15,6 +16,34 @@
     if (!statusEl) return;
     statusEl.textContent = text;
     statusEl.classList.toggle('plus-active', good);
+  }
+
+  function openUpgrade() {
+    if (typeof window.nav === 'function') window.nav('profile');
+    else $('#profileView')?.classList.add('active');
+    setTimeout(() => $('#plusCard')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
+  }
+
+  function applyEntitlements(active) {
+    window.FORTIFY_PLUS_ACTIVE = !!active;
+    document.body.classList.toggle('fortify-plus-active', !!active);
+    $$('[data-plus-feature]').forEach(el => {
+      el.classList.toggle('plus-locked', !active);
+      el.classList.toggle('plus-unlocked', !!active);
+      if (!active) {
+        el.setAttribute('role', 'button');
+        el.setAttribute('tabindex', '0');
+        el.setAttribute('aria-label', `${el.dataset.plusFeature || 'Premium feature'} requires Fortify+`);
+        el.onclick = openUpgrade;
+        el.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openUpgrade(); } };
+      } else {
+        el.removeAttribute('role');
+        el.removeAttribute('tabindex');
+        el.removeAttribute('aria-label');
+        el.onclick = null;
+        el.onkeydown = null;
+      }
+    });
   }
 
   async function getSession() {
@@ -65,23 +94,27 @@
         setStatus('Sign in to start or view your Fortify+ subscription.');
         if (plans) plans.hidden = false;
         if (manage) manage.hidden = true;
+        applyEntitlements(false);
         return null;
       }
       if (!subscription) {
         setStatus('No Fortify+ subscription yet. Sandbox checkout is ready below.');
         if (plans) plans.hidden = false;
         if (manage) manage.hidden = true;
+        applyEntitlements(false);
         return null;
       }
       const active = ['active','trialing'].includes(subscription.status);
       const label = subscription.status === 'trialing' ? '7-day trial active' : subscription.status === 'active' ? 'Fortify+ active' : `Status: ${subscription.status}`;
       const plan = subscription.plan ? ` · ${subscription.plan}` : '';
-      setStatus(`${label}${plan}`, active);
+      setStatus(`${label}${plan}${active ? ' · premium features unlocked' : ''}`, active);
       if (plans) plans.hidden = active;
       if (manage) manage.hidden = !active;
+      applyEntitlements(active);
       return subscription;
     } catch (e) {
       setStatus(e.message || 'Could not load subscription status.');
+      applyEntitlements(false);
       return null;
     }
   }
@@ -91,6 +124,7 @@
   if (manageBtn) manageBtn.onclick = openPortal;
 
   async function init() {
+    applyEntitlements(false);
     await refreshStatus();
   }
 
