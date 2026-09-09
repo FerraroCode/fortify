@@ -68,7 +68,17 @@
     signUp.disabled = signIn.disabled = true;
     msg('Signing in and syncing...');
     try {
-      await cloud().signIn(e, p);
+      const { data: authData, error: authError } = await cloud().client.auth.signInWithPassword({ email:e, password:p });
+      if (authError) throw authError;
+      const uid = authData.user.id;
+      const { data: profile, error: profileError } = await cloud().client.from('profiles').select('reason').eq('id',uid).maybeSingle();
+      if (profileError) throw profileError;
+      if (profile?.reason) {
+        await cloud().pullCloud();
+      } else {
+        await cloud().pushLocal();
+        await cloud().pullCloud();
+      }
       msg('Signed in. Cloud backup is on.');
       await refresh();
       location.reload();
