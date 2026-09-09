@@ -17,6 +17,7 @@
     return;
   }
 
+  let signupNotice = '';
   const msg = (text, isError=false) => {
     status.textContent = text;
     status.style.color = isError ? '#ff8e8e' : '';
@@ -29,8 +30,11 @@
       form.hidden = signedIn;
       signedInBox.hidden = !signedIn;
       if (signedIn) {
+        signupNotice = '';
         accountEmailText.textContent = s.user.email || 'Signed in';
         msg('Cloud backup is on.');
+      } else if (signupNotice) {
+        msg(signupNotice);
       } else {
         msg('Create an account to back up your Fortify progress.');
       }
@@ -49,9 +53,11 @@
       const d = await cloud().signUp(e, p);
       if (d.session) {
         await cloud().pushLocal();
+        signupNotice = '';
         msg('Account created. Your existing Fortify data is backed up.');
       } else {
-        msg('Account created. Check your email to confirm it, then sign in.');
+        signupNotice = `Verification email sent to ${e}. Open that email and tap the confirmation link before signing in. Check Spam or Junk if you don't see it.`;
+        msg(signupNotice);
       }
       await refresh();
     } catch (err) {
@@ -79,6 +85,7 @@
         await cloud().pushLocal();
         await cloud().pullCloud();
       }
+      signupNotice = '';
       msg('Signed in. Cloud backup is on.');
       await refresh();
       location.reload();
