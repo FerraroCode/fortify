@@ -1,7 +1,6 @@
 (() => {
   const MONTHLY_LINK = 'https://buy.stripe.com/test_28EcN5dpvg535Xv4SP0Ny00';
   const YEARLY_LINK = 'https://buy.stripe.com/test_4gM6oH5X3aKJ1Hf70X0Ny01';
-  const PORTAL_LINK = 'https://billing.stripe.com/p/login/test_28EcN5dpvg535Xv4SP0Ny00';
   const $ = s => document.querySelector(s);
   const $$ = s => [...document.querySelectorAll(s)];
   const cloud = () => window.FortifyCloud;
@@ -97,10 +96,14 @@
     try {
       const s = await getSession();
       if (!s) return setStatus('Sign in to manage Fortify+.');
-      const u = new URL(PORTAL_LINK);
-      if (s.user.email) u.searchParams.set('prefilled_email', s.user.email);
-      location.href = u.toString();
-    } catch (e) { setStatus(e.message || 'Could not open subscription management.'); }
+      setStatus('Opening Fortify+ billing…', true);
+      const { data, error } = await cloud().client.functions.invoke('create-portal-session', { body: {} });
+      if (error) throw error;
+      if (!data?.url) throw new Error(data?.error || 'Could not open subscription management.');
+      location.href = data.url;
+    } catch (e) {
+      setStatus(e?.message || 'Could not open subscription management.');
+    }
   }
 
   async function refreshStatus() {
