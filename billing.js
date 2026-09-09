@@ -20,7 +20,10 @@
 
   function openUpgrade() {
     if (typeof window.nav === 'function') window.nav('profile');
-    else $('#profileView')?.classList.add('active');
+    else {
+      $$('.view').forEach(x=>x.classList.remove('active'));
+      $('#profileView')?.classList.add('active');
+    }
     setTimeout(() => $('#plusCard')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
   }
 
@@ -44,6 +47,16 @@
         el.onkeydown = null;
       }
     });
+    window.dispatchEvent(new CustomEvent('fortifypluschange',{detail:{active:!!active}}));
+  }
+
+  function loadPremiumTools(){
+    if(document.querySelector('script[data-fortify-premium]')) return;
+    const s=document.createElement('script');
+    s.src='premium.js';
+    s.dataset.fortifyPremium='1';
+    s.onload=()=>applyEntitlements(!!window.FORTIFY_PLUS_ACTIVE);
+    document.body.appendChild(s);
   }
 
   async function getSession() {
@@ -125,6 +138,7 @@
 
   async function init() {
     applyEntitlements(false);
+    loadPremiumTools();
     await refreshStatus();
   }
 
