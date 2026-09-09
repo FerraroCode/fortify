@@ -29,7 +29,15 @@
   }
   async function disable(){try{const s=await session(),sub=await currentSub();if(sub){await cloud()?.client.from('push_subscriptions').delete().eq('endpoint',sub.endpoint);await sub.unsubscribe()}if(s)await savePref(s.user.id,false,$('#reminderTime')?.value||'21:00');status('Push reminders are off.');const b=$('#pushEnableBtn');if(b)b.textContent='Enable push'}catch(e){status(e.message||'Could not disable push notifications.')}}
   async function toggle(){const sub=await currentSub();return sub?disable():enable()}
-  async function saveTime(time){try{const s=await session(),sub=await currentSub();if(s&&sub)await savePref(s.user.id,true,time)}catch(e){console.warn('Fortify push time sync failed',e)}}
+  async function saveTime(time){
+    try{
+      const s=await session(),sub=await currentSub();
+      if(!s||!sub)return;
+      const tz=Intl.DateTimeFormat().resolvedOptions().timeZone||'America/New_York';
+      const {error}=await cloud().client.from('push_preferences').upsert({user_id:s.user.id,enabled:true,reminder_time:time||'21:00',timezone:tz,last_sent_date:null,updated_at:new Date().toISOString()},{onConflict:'user_id'});
+      if(error)throw error;
+    }catch(e){console.warn('Fortify push time sync failed',e)}
+  }
   async function test(){
     try{
       if(!window.FORTIFY_PLUS_ACTIVE)return status('Fortify+ is required for push reminders.');
