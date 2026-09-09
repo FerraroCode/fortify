@@ -50,13 +50,15 @@
     window.dispatchEvent(new CustomEvent('fortifypluschange',{detail:{active:!!active}}));
   }
 
+  function loadExtra(src,attr,onload){
+    if(document.querySelector(`script[${attr}]`)){onload?.();return;}
+    const s=document.createElement('script');s.src=src;s.setAttribute(attr,'1');if(onload)s.onload=onload;document.body.appendChild(s);
+  }
   function loadPremiumTools(){
-    if(document.querySelector('script[data-fortify-premium]')) return;
-    const s=document.createElement('script');
-    s.src='premium.js';
-    s.dataset.fortifyPremium='1';
-    s.onload=()=>applyEntitlements(!!window.FORTIFY_PLUS_ACTIVE);
-    document.body.appendChild(s);
+    loadExtra('premium.js','data-fortify-premium',()=>{
+      applyEntitlements(!!window.FORTIFY_PLUS_ACTIVE);
+      loadExtra('push.js','data-fortify-push',()=>window.FortifyPush?.refresh?.());
+    });
   }
 
   async function getSession() {
