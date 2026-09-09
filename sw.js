@@ -1,8 +1,18 @@
-const CACHE='fortify-v7';
-const ASSETS=['./','./index.html','./styles.css','./app.js','./config.js','./cloud.js','./auth.js','./billing.js','./premium.js','./manifest.json'];
+const CACHE='fortify-v8';
+const ASSETS=['./','./index.html','./styles.css','./app.js','./config.js','./cloud.js','./auth.js','./billing.js','./premium.js','./push.js','./manifest.json'];
 self.addEventListener('install',e=>{self.skipWaiting();e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)))});
 self.addEventListener('activate',e=>e.waitUntil(Promise.all([caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))),self.clients.claim()])));
 self.addEventListener('fetch',e=>{
   if(e.request.method!=='GET')return;
   e.respondWith(fetch(e.request).then(r=>{const copy=r.clone();caches.open(CACHE).then(c=>c.put(e.request,copy));return r}).catch(()=>caches.match(e.request)));
+});
+self.addEventListener('push',e=>{
+  let payload={title:'Fortify',body:'Your daily check-in is ready.',url:'./'};
+  try{payload={...payload,...e.data.json()}}catch{}
+  e.waitUntil(self.registration.showNotification(payload.title,{body:payload.body,icon:'./icon-192.png',badge:'./icon-192.png',tag:'fortify-daily-reminder',renotify:true,data:{url:payload.url||'./'}}));
+});
+self.addEventListener('notificationclick',e=>{
+  e.notification.close();
+  const target=new URL(e.notification.data?.url||'./',self.location.origin).href;
+  e.waitUntil(clients.matchAll({type:'window',includeUncontrolled:true}).then(list=>{for(const c of list){if('focus'in c){c.navigate?.(target);return c.focus()}}return clients.openWindow?clients.openWindow(target):undefined}));
 });
