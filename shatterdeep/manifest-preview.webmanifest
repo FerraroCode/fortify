@@ -1,0 +1,15 @@
+{
+  "name": "SHATTERDEEP",
+  "short_name": "SHATTERDEEP",
+  "description": "An endless dark-fantasy action RPG about pushing deeper, growing stronger, and rebuilding a fortress.",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#03040b",
+  "theme_color": "#070814",
+  "icons": [
+    {"src":"./icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}
+  ]
+}
