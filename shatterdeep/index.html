@@ -10,21 +10,24 @@
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="apple-touch-icon" href="./icon.svg">
 <link rel="stylesheet" href="./styles-v03.css">
+<link rel="stylesheet" href="./upgrade-v04.css">
 <title>SHATTERDEEP</title>
 </head>
 <body>
 <div id="app">
-<header><div class="brand">SHATTERDEEP <span>v0.3</span></div><div class="topstat"><small>GOLD / EMBER</small><b id="resources">0 ◈ · 0 ✦</b></div><div class="topstat depth"><small>DEPTH</small><b id="depth">1</b></div></header>
+<header><div class="brand">SHATTERDEEP <span>v0.4</span></div><div class="topstat"><small>GOLD / EMBER</small><b id="resources">0 ◈ · 0 ✦</b></div><div class="topstat depth"><small>DEPTH</small><b id="depth">1</b></div></header>
 <main>
-<section id="adventure" class="view on"><canvas id="game" width="480" height="780"></canvas><div class="hud"><div class="area" id="areaName">RUINED OUTPOST</div><div class="objective" id="objective">Search the outpost</div><div class="hp"><i id="hpbar"></i></div><div class="hptext" id="hptext">100 / 100</div></div><div id="toast" class="toast"></div><button id="install" class="install pixelbtn">INSTALL</button><div class="abilities"><button id="heal">✚<small>HEAL</small></button><button id="burst">✦<small>BURST</small></button></div></section>
+<section id="adventure" class="view on"><canvas id="game" width="480" height="780"></canvas><div class="hud"><div class="area" id="areaName">RUINED OUTPOST</div><div class="objective" id="objective">Search the outpost</div><div class="hp"><i id="hpbar"></i></div><div class="hptext" id="hptext">100 / 100</div></div><div id="toast" class="toast"></div><button id="install" class="install pixelbtn">INSTALL</button><div id="joystick" class="joystick"><div id="stick" class="stick"></div><div class="joystick-label">MOVE</div></div><div class="abilities"><button id="heal">✚<small>HEAL</small></button><button id="burst">✦<small>BURST</small></button></div></section>
 <section id="fortress" class="view sheet"><h2>YOUR FORTRESS</h2><p>Bring resources home. Every upgrade changes what your settlement can do.</p><div class="fortress-art"><div class="skyglow"></div><div class="ridge"></div><div class="fortwall"></div><div class="keep"><div class="gate"></div></div><div class="forgeglow"></div></div><div id="upgrades"></div></section>
 <section id="clanview" class="view sheet"><h2>CLAN FORTRESS</h2><p>Online members appear here. Offline members remain around the stronghold.</p><div id="clanYard" class="clanyard"><div class="campfire"></div></div><div class="panel"><b>THE CINDERBOUND</b><span>Mara found a Legendary · Kade reached Depth 84 · Rowan added 620 stone</span></div></section>
-<section id="gear" class="view sheet"><h2>CHARACTER</h2><p>Equipped armor, hood and weapon are drawn on your actual character.</p><div class="character-grid"><div class="paperdoll"><canvas id="doll" width="96" height="128"></canvas></div><div class="panel"><b id="playerName">Wanderer</b><span id="levelText">LEVEL 1</span><div id="slots"></div><button id="customize" class="pixelbtn">CUSTOMIZE</button></div></div><h3>INVENTORY</h3><div id="inventory" class="inventory"></div></section>
+<section id="gear" class="view sheet"><h2>CHARACTER</h2><p>Choose a detailed character preset. Your equipped rarity still adds weapon and armor effects.</p><div class="character-grid"><div class="paperdoll"><canvas id="doll" width="108" height="144"></canvas></div><div class="panel"><b id="playerName">Wanderer</b><span id="levelText">LEVEL 1</span><div id="slots"></div><button id="customize" class="pixelbtn">CUSTOMIZE</button></div></div><h3>INVENTORY</h3><div id="inventory" class="inventory"></div></section>
 </main>
 <nav><button class="on" data-view="adventure"><span>⚔</span>ADVENTURE</button><button data-view="fortress"><span>♜</span>FORTRESS</button><button data-view="clanview"><span>♨</span>CLAN</button><button data-view="gear"><span>◆</span>GEAR</button></nav>
 </div>
-<div id="creator" class="modal"><div class="modalbox"><h2>YOUR WANDERER</h2><input id="charName" placeholder="Character name"><label>SKIN</label><div id="skins" class="swatches"></div><label>HAIR</label><div id="hairs" class="swatches"></div><button id="saveChar" class="pixelbtn">ENTER THE GLOAM</button></div></div>
+<div id="creator" class="modal"><div class="modalbox"><h2>YOUR WANDERER</h2><label>CHARACTER PRESET</label><div id="presets" class="presets"></div><input id="charName" placeholder="Character name"><div class="legacy-custom" style="display:none"><label>SKIN</label><div id="skins" class="swatches"></div><label>HAIR</label><div id="hairs" class="swatches"></div></div><button id="saveChar" class="pixelbtn">ENTER THE GLOAM</button></div></div>
 <div id="installGuide" class="modal"><div class="modalbox guide"><h2>INSTALL ON IPHONE</h2><p>Open in <b>Safari</b> → tap <b>Share</b> → <b>Add to Home Screen</b> → <b>Add</b>.</p><button id="closeGuide" class="pixelbtn">GOT IT</button></div></div>
+<script src="./sprite-atlas.js"></script>
 <script src="./game-v03.js"></script>
+<script src="./upgrade-v04.js"></script>
 </body>
 </html>
