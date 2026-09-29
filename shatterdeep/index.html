@@ -11,30 +11,30 @@
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="icon" href="./assets/icon-192.png">
 <link rel="apple-touch-icon" href="./assets/icon-192.png">
-<link rel="stylesheet" href="./style.css?v=050">
+<link rel="stylesheet" href="./style.css?v=060">
 <title>SHATTERDEEP — The Gloam Wilds</title>
 </head>
 <body>
 <div id="app">
  <header class="topbar">
-  <button class="wordmark" id="brandButton" aria-label="Open game menu"><svg viewBox="0 0 28 34" aria-hidden="true"><path d="M15 1 4 15l8 4-4 13 16-18-10-3z"/></svg><span>SHATTERDEEP<small>THE GLOAM CHRONICLES</small></span><em>α 0.5</em></button>
+  <button class="wordmark" id="brandButton" aria-label="Open game menu"><svg viewBox="0 0 28 34" aria-hidden="true"><path d="M15 1 4 15l8 4-4 13 16-18-10-3z"/></svg><span>SHATTERDEEP<small>THE GLOAM CHRONICLES</small></span><em>α 0.6</em></button>
   <div class="resources" id="resources" aria-label="Resources"><span title="Gold"><i data-icon="coin"></i><b id="gold">0</b></span><span title="Wood"><i data-icon="wood"></i><b id="wood">0</b></span><span title="Stone"><i data-icon="stone"></i><b id="stone">0</b></span><span class="ember" title="Rift ember"><i data-icon="gem"></i><b id="ember">0</b></span></div>
   <button class="iconbtn" id="settingsButton" aria-label="Settings"><i data-icon="settings"></i></button>
  </header>
  <main id="viewport">
-  <canvas id="game" aria-label="SHATTERDEEP game world. Move with WASD, arrow keys, or the touch joystick. Basic attacks are automatic."></canvas>
+  <canvas id="game" aria-label="SHATTERDEEP game world. Touch and drag on the world to move. Basic attacks are automatic."></canvas>
   <div class="top-hud" id="topHud">
    <div class="vitals"><div class="portrait"><canvas id="portrait" width="76" height="84"></canvas><b id="level">1</b></div><div class="vitals-main"><div class="name-row"><span id="playerName">Wanderer</span><small id="healthText">120 / 120</small></div><div class="health-track"><i id="healthBar"></i></div><div class="xp-track"><i id="xpBar"></i></div><div class="vitals-caption"><span id="playerTitle">THE UNBROKEN</span><span id="saveStatus">SAVED LOCALLY</span></div></div></div>
    <div class="location"><small id="realm">REALM I · GLOAM WILDS</small><strong id="areaName">Ruined Outpost</strong><span id="depthText">WORLD DEPTH 1</span></div>
-   <button id="minimapButton" class="minimap" aria-label="Open world map"><canvas id="minimap" width="124" height="130"></canvas><span><i data-icon="compass"></i> MAP <kbd>M</kbd></span></button>
+   <button id="minimapButton" class="minimap" aria-label="Open world map"><canvas id="minimap" width="124" height="130"></canvas><span><i data-icon="compass"></i> MAP </span></button>
   </div>
   <div class="quest" id="quest"><small><i data-icon="diamond"></i> YOUR JOURNEY</small><strong id="questTitle">The last watch</strong><p id="questText">Search the chest in the ruined outpost.</p><span id="distanceText"></span></div>
   <div id="areaBanner" class="area-banner"><small>DISCOVERED</small><strong></strong><i></i></div>
   <div class="boss-hud hidden" id="bossHud"><small>WARDEN OF THE GLOAM</small><strong>THE HOLLOW STAG</strong><div><i id="bossBar"></i></div><span id="bossAction">The grove remembers</span></div>
   <div class="event-label hidden" id="eventLabel">RIFT STORM · Survive the incursion</div>
   <div id="toastStack" class="toast-stack" role="status" aria-live="polite"></div>
-  <button id="interact" class="interact hidden"><kbd>E</kbd><span>Interact</span><i data-icon="hand"></i></button>
-  <div class="controls" id="controls"><div class="joystick-wrap"><div id="joystick" class="joystick" role="application" aria-label="Movement joystick"><span class="joy-axis x"></span><span class="joy-axis y"></span><div id="stick"><i data-icon="diamond"></i></div></div><small>MOVE <span>W A S D</span></small></div><div class="abilities"><button class="ability heal" data-ability="heal" aria-label="Heal, Q"><span class="ability-symbol" data-icon="heal"></span><b>HEAL</b><kbd>Q</kbd><em></em></button><button class="ability burst" data-ability="burst" aria-label="Rift Burst, R"><span class="ability-symbol" data-icon="burst"></span><b>RIFT BURST</b><kbd>R</kbd><em></em></button><button class="ability special" data-ability="special" aria-label="Weapon special, F"><span class="ability-symbol" data-icon="sword"></span><b>SPECIAL</b><kbd>F</kbd><em></em></button><button class="ability dodge" data-ability="dodge" aria-label="Dodge, Space"><span class="ability-symbol" data-icon="dodge"></span><b>DODGE</b><kbd>SPACE</kbd><em></em></button></div></div>
+  <button id="interact" class="interact hidden"><span>Interact</span><i data-icon="hand"></i></button>
+  <div class="controls" id="controls"><div class="joystick-wrap"><div id="joystick" class="joystick" role="application" aria-label="Movement joystick"><span class="joy-axis x"></span><span class="joy-axis y"></span><div id="stick"><i data-icon="diamond"></i></div></div><small>TOUCH & DRAG TO MOVE</small></div><div class="abilities"><button class="ability heal" data-ability="heal" aria-label="Heal"><span class="ability-symbol" data-icon="heal"></span><b>HEAL</b><em></em></button><button class="ability burst" data-ability="burst" aria-label="Rift Burst"><span class="ability-symbol" data-icon="burst"></span><b>RIFT BURST</b><em></em></button><button class="ability special" data-ability="special" aria-label="Weapon special"><span class="ability-symbol" data-icon="sword"></span><b>SPECIAL</b><em></em></button><button class="ability dodge" data-ability="dodge" aria-label="Dodge"><span class="ability-symbol" data-icon="dodge"></span><b>DODGE</b><em></em></button></div></div>
   <div class="combat-tip" id="combatTip"><span></span> AUTO-ATTACK ENABLED <i>Stay close. Keep moving.</i></div>
   <div class="pause-label hidden" id="pauseLabel">PAUSED <button id="resume">Resume journey</button></div>
  </main>
@@ -56,6 +56,6 @@
 <div class="modal-backdrop hidden" id="modalBackdrop"></div>
 <section class="modal hidden" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><button class="iconbtn modal-close" id="closeModal" aria-label="Close dialog"><i data-icon="close"></i></button><small id="modalEyebrow">THE GLOAM CHRONICLES</small><h2 id="modalTitle"></h2><div id="modalContent"></div></section>
 <input id="importFile" type="file" accept="application/json,.json" hidden>
-<script type="module" src="./main.js?v=050"></script>
+<script type="module" src="./main.js?v=060"></script>
 </body>
 </html>
