@@ -1,0 +1,31 @@
+# SHATTERDEEP 0.5
+
+An installable Canvas action RPG served from `/shatterdeep/`. No build step or runtime dependencies are required for solo play. The parent Fortify app is separate.
+
+## Run and test
+
+From this directory: `npm run serve`, then open `http://localhost:4173/`. Run `npm test` for engine regression tests. Service workers require HTTPS or localhost.
+
+## Play
+
+Move with WASD, arrow keys, or the analog touch joystick. Basic attacks automatically target nearby enemies. Use Q to heal, R for Rift Burst, F for a weapon special, Space to dodge, and E to interact. Search the outpost chest, follow the road, clear the Rift Scar, defeat the Hollow Stag, and enter the Deep Rift. Return to Emberhold to bank resources, construct buildings, and prepare equipment.
+
+The implementation includes six appearance presets, visible equipment, four weapon attack behaviors, loot effects, perks, survivor rescues, companions, nine fortress buildings, limited offline production, repeatable depths, encounter saves, export/import, legacy-save migration, and non-destructive death penalties. Later depths add enemy combinations and Realm palettes.
+
+## Online systems
+
+`online.js` uses a pinned local Supabase browser client and a public publishable key. This key is intentionally public; access control is enforced by the database. `online-schema.sql` records the deployed migration for isolated `sd_` tables, private helper functions, authenticated RPCs, and realtime policies. Do not put service-role credentials in browser files.
+
+Players can sign in, explicitly upload/restore a cloud save, create or join a clan using an invite code, contribute banked stone, and visit a shared stronghold. Private realtime channels broadcast presence, positions, and emotes. Contributions atomically deduct stone from the player's cloud save. Progress originates from a local game, so this release is not cheat-resistant and should not be used for competitive or paid economies.
+
+## Current scope
+
+This is an early-access playable foundation, not the complete long-term design. Party exploration/combat, authoritative multiplayer progression, unique handcrafted maps and bosses for later Realms, advanced crafting recipes, and the full event catalogue are still future work. The first journey uses the Gloam modules at every depth with palette and enemy changes.
+
+## PWA
+
+The service worker caches game code, art, fonts, and the optional online client. Solo play works offline after installation finishes. Cloud and clan features require internet. On iPhone, open the live URL in Safari, Share → Add to Home Screen. Saves belong to the browser installation; export a backup before clearing browser data or changing devices.
+
+## Art and dependencies
+
+Original character, prop, and ground artwork generated for SHATTERDEEP. Cinzel and Inter are distributed under the SIL Open Font License. The bundled Supabase JavaScript client is version 2.57.4 (MIT). The game uses no external asset requests during solo play.

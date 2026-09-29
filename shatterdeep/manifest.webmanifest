@@ -1,13 +1,1 @@
-{
-  "name":"SHATTERDEEP",
-  "short_name":"SHATTERDEEP",
-  "description":"An endless dark-fantasy action RPG about pushing deeper, growing stronger, and rebuilding a fortress.",
-  "id":"./",
-  "start_url":"./",
-  "scope":"./",
-  "display":"standalone",
-  "orientation":"portrait",
-  "background_color":"#080612",
-  "theme_color":"#080612",
-  "icons":[{"src":"./icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]
-}
+{"id":"/shatterdeep/","name":"SHATTERDEEP","short_name":"SHATTERDEEP","description":"An endless dark fantasy action RPG. Go farther. Get stronger. Build bigger. Descend deeper.","start_url":"./","scope":"./","display":"standalone","orientation":"any","background_color":"#08151b","theme_color":"#09161a","icons":[{"src":"./assets/icon-192.png","sizes":"192x192","type":"image/png","purpose":"any"},{"src":"./assets/icon-512.png","sizes":"512x512","type":"image/png","purpose":"any maskable"}]}

@@ -2,32 +2,60 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<meta name="theme-color" content="#080713">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#09161a">
+<meta name="description" content="Descend into the Gloam Wilds. A dark fantasy action RPG of exploration, loot, and rebuilding a world after The Shattering.">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="SHATTERDEEP">
 <link rel="manifest" href="./manifest.webmanifest">
-<link rel="apple-touch-icon" href="./icon.svg">
-<link rel="stylesheet" href="./styles-v03.css">
-<link rel="stylesheet" href="./upgrade-v04.css">
-<title>SHATTERDEEP</title>
+<link rel="icon" href="./assets/icon-192.png">
+<link rel="apple-touch-icon" href="./assets/icon-192.png">
+<link rel="stylesheet" href="./style.css?v=050">
+<title>SHATTERDEEP — The Gloam Wilds</title>
 </head>
 <body>
 <div id="app">
-<header><div class="brand">SHATTERDEEP <span>v0.4</span></div><div class="topstat"><small>GOLD / EMBER</small><b id="resources">0 ◈ · 0 ✦</b></div><div class="topstat depth"><small>DEPTH</small><b id="depth">1</b></div></header>
-<main>
-<section id="adventure" class="view on"><canvas id="game" width="480" height="780"></canvas><div class="hud"><div class="area" id="areaName">RUINED OUTPOST</div><div class="objective" id="objective">Search the outpost</div><div class="hp"><i id="hpbar"></i></div><div class="hptext" id="hptext">100 / 100</div></div><div id="toast" class="toast"></div><button id="install" class="install pixelbtn">INSTALL</button><div id="joystick" class="joystick"><div id="stick" class="stick"></div><div class="joystick-label">MOVE</div></div><div class="abilities"><button id="heal">✚<small>HEAL</small></button><button id="burst">✦<small>BURST</small></button></div></section>
-<section id="fortress" class="view sheet"><h2>YOUR FORTRESS</h2><p>Bring resources home. Every upgrade changes what your settlement can do.</p><div class="fortress-art"><div class="skyglow"></div><div class="ridge"></div><div class="fortwall"></div><div class="keep"><div class="gate"></div></div><div class="forgeglow"></div></div><div id="upgrades"></div></section>
-<section id="clanview" class="view sheet"><h2>CLAN FORTRESS</h2><p>Online members appear here. Offline members remain around the stronghold.</p><div id="clanYard" class="clanyard"><div class="campfire"></div></div><div class="panel"><b>THE CINDERBOUND</b><span>Mara found a Legendary · Kade reached Depth 84 · Rowan added 620 stone</span></div></section>
-<section id="gear" class="view sheet"><h2>CHARACTER</h2><p>Choose a detailed character preset. Your equipped rarity still adds weapon and armor effects.</p><div class="character-grid"><div class="paperdoll"><canvas id="doll" width="108" height="144"></canvas></div><div class="panel"><b id="playerName">Wanderer</b><span id="levelText">LEVEL 1</span><div id="slots"></div><button id="customize" class="pixelbtn">CUSTOMIZE</button></div></div><h3>INVENTORY</h3><div id="inventory" class="inventory"></div></section>
-</main>
-<nav><button class="on" data-view="adventure"><span>⚔</span>ADVENTURE</button><button data-view="fortress"><span>♜</span>FORTRESS</button><button data-view="clanview"><span>♨</span>CLAN</button><button data-view="gear"><span>◆</span>GEAR</button></nav>
+ <header class="topbar">
+  <button class="wordmark" id="brandButton" aria-label="Open game menu"><svg viewBox="0 0 28 34" aria-hidden="true"><path d="M15 1 4 15l8 4-4 13 16-18-10-3z"/></svg><span>SHATTERDEEP<small>THE GLOAM CHRONICLES</small></span><em>α 0.5</em></button>
+  <div class="resources" id="resources" aria-label="Resources"><span title="Gold"><i data-icon="coin"></i><b id="gold">0</b></span><span title="Wood"><i data-icon="wood"></i><b id="wood">0</b></span><span title="Stone"><i data-icon="stone"></i><b id="stone">0</b></span><span class="ember" title="Rift ember"><i data-icon="gem"></i><b id="ember">0</b></span></div>
+  <button class="iconbtn" id="settingsButton" aria-label="Settings"><i data-icon="settings"></i></button>
+ </header>
+ <main id="viewport">
+  <canvas id="game" aria-label="SHATTERDEEP game world. Move with WASD, arrow keys, or the touch joystick. Basic attacks are automatic."></canvas>
+  <div class="top-hud" id="topHud">
+   <div class="vitals"><div class="portrait"><canvas id="portrait" width="76" height="84"></canvas><b id="level">1</b></div><div class="vitals-main"><div class="name-row"><span id="playerName">Wanderer</span><small id="healthText">120 / 120</small></div><div class="health-track"><i id="healthBar"></i></div><div class="xp-track"><i id="xpBar"></i></div><div class="vitals-caption"><span id="playerTitle">THE UNBROKEN</span><span id="saveStatus">SAVED LOCALLY</span></div></div></div>
+   <div class="location"><small id="realm">REALM I · GLOAM WILDS</small><strong id="areaName">Ruined Outpost</strong><span id="depthText">WORLD DEPTH 1</span></div>
+   <button id="minimapButton" class="minimap" aria-label="Open world map"><canvas id="minimap" width="124" height="130"></canvas><span><i data-icon="compass"></i> MAP <kbd>M</kbd></span></button>
+  </div>
+  <div class="quest" id="quest"><small><i data-icon="diamond"></i> YOUR JOURNEY</small><strong id="questTitle">The last watch</strong><p id="questText">Search the chest in the ruined outpost.</p><span id="distanceText"></span></div>
+  <div id="areaBanner" class="area-banner"><small>DISCOVERED</small><strong></strong><i></i></div>
+  <div class="boss-hud hidden" id="bossHud"><small>WARDEN OF THE GLOAM</small><strong>THE HOLLOW STAG</strong><div><i id="bossBar"></i></div><span id="bossAction">The grove remembers</span></div>
+  <div class="event-label hidden" id="eventLabel">RIFT STORM · Survive the incursion</div>
+  <div id="toastStack" class="toast-stack" role="status" aria-live="polite"></div>
+  <button id="interact" class="interact hidden"><kbd>E</kbd><span>Interact</span><i data-icon="hand"></i></button>
+  <div class="controls" id="controls"><div class="joystick-wrap"><div id="joystick" class="joystick" role="application" aria-label="Movement joystick"><span class="joy-axis x"></span><span class="joy-axis y"></span><div id="stick"><i data-icon="diamond"></i></div></div><small>MOVE <span>W A S D</span></small></div><div class="abilities"><button class="ability heal" data-ability="heal" aria-label="Heal, Q"><span class="ability-symbol" data-icon="heal"></span><b>HEAL</b><kbd>Q</kbd><em></em></button><button class="ability burst" data-ability="burst" aria-label="Rift Burst, R"><span class="ability-symbol" data-icon="burst"></span><b>RIFT BURST</b><kbd>R</kbd><em></em></button><button class="ability special" data-ability="special" aria-label="Weapon special, F"><span class="ability-symbol" data-icon="sword"></span><b>SPECIAL</b><kbd>F</kbd><em></em></button><button class="ability dodge" data-ability="dodge" aria-label="Dodge, Space"><span class="ability-symbol" data-icon="dodge"></span><b>DODGE</b><kbd>SPACE</kbd><em></em></button></div></div>
+  <div class="combat-tip" id="combatTip"><span></span> AUTO-ATTACK ENABLED <i>Stay close. Keep moving.</i></div>
+  <div class="pause-label hidden" id="pauseLabel">PAUSED <button id="resume">Resume journey</button></div>
+ </main>
+ <nav class="bottom-nav" aria-label="Game navigation">
+  <button id="adventureNav" class="active"><i data-icon="compass"></i><span>EXPLORE</span><small>Gloam Wilds</small></button>
+  <button id="fortNav"><i data-icon="fortress"></i><span>FORTRESS</span><small id="fortCaption">Emberhold Camp</small></button>
+  <button id="gearNav"><i data-icon="sword"></i><span>CHARACTER</span><small>Equipment & perks</small><b id="lootBadge" class="hidden">1</b></button>
+  <button id="journalNav"><i data-icon="book"></i><span>JOURNAL</span><small>Discover the truth</small></button>
+  <button id="clanNav"><i data-icon="clan"></i><span>CLAN</span><small>Build together</small></button>
+ </nav>
 </div>
-<div id="creator" class="modal"><div class="modalbox"><h2>YOUR WANDERER</h2><label>CHARACTER PRESET</label><div id="presets" class="presets"></div><input id="charName" placeholder="Character name"><div class="legacy-custom" style="display:none"><label>SKIN</label><div id="skins" class="swatches"></div><label>HAIR</label><div id="hairs" class="swatches"></div></div><button id="saveChar" class="pixelbtn">ENTER THE GLOAM</button></div></div>
-<div id="installGuide" class="modal"><div class="modalbox guide"><h2>INSTALL ON IPHONE</h2><p>Open in <b>Safari</b> → tap <b>Share</b> → <b>Add to Home Screen</b> → <b>Add</b>.</p><button id="closeGuide" class="pixelbtn">GOT IT</button></div></div>
-<script src="./sprite-atlas.js"></script>
-<script src="./game-v03.js"></script>
-<script src="./upgrade-v04.js"></script>
+<div class="loading-screen" id="loading"><div class="loading-rune">S</div><h1>SHATTERDEEP</h1><p>Lighting the last fire…</p><div></div></div>
+<div class="start-screen hidden" id="startScreen">
+ <div class="start-shade"></div><section class="start-card"><div class="eyebrow">THE WORLD BROKE. YOU REMAIN.</div><h1>SHATTER<span>DEEP</span></h1><div class="start-rule"><i></i><b>THE GLOAM WILDS</b><i></i></div><p>The old road is silent. The fire still burns.<br>Something is waiting beyond the trees.</p><button class="primary" id="awaken">BEGIN YOUR JOURNEY <i data-icon="sword"></i></button><button class="quiet" id="chooseAppearance">Choose your wanderer</button><small class="start-footer">EARLY ACCESS · SINGLE PLAYER & CLAN STRONGHOLDS<br>Best with sound. Your journey saves automatically.</small></section>
+ <canvas id="startHero" width="360" height="430"></canvas>
+</div>
+<div class="sheet-backdrop hidden" id="sheetBackdrop"></div>
+<section class="sheet hidden" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle"><header><div><small id="sheetEyebrow">YOUR JOURNEY</small><h2 id="sheetTitle">Character</h2></div><button class="iconbtn" id="closeSheet" aria-label="Close panel"><i data-icon="close"></i></button></header><div id="sheetContent" class="sheet-content"></div></section>
+<div class="modal-backdrop hidden" id="modalBackdrop"></div>
+<section class="modal hidden" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><button class="iconbtn modal-close" id="closeModal" aria-label="Close dialog"><i data-icon="close"></i></button><small id="modalEyebrow">THE GLOAM CHRONICLES</small><h2 id="modalTitle"></h2><div id="modalContent"></div></section>
+<input id="importFile" type="file" accept="application/json,.json" hidden>
+<script type="module" src="./main.js?v=050"></script>
 </body>
 </html>
