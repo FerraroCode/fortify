@@ -1,4 +1,4 @@
-import {safeSave,SAVE_KEY} from './data.js?v=060';
+import {safeSave,SAVE_KEY,appearanceOf} from './data.js?v=070';
 const URL='https://xbovltvoukrobvjjlemo.supabase.co';
 const KEY='sb_publishable_fHwXDiMLK2bj5gZVU_4Kfg_43VonsAr';
 export class Online{
@@ -7,7 +7,7 @@ export class Online{
  assert(){if(!this.client)throw new Error(this.error||'Online services are still loading. Try again in a moment.');if(!navigator.onLine)throw new Error('You are offline. Your solo journey is saved on this device.');}
  async auth(email,password,signup=false){await this.ready;this.assert();if(password.length<8)throw new Error('Use a password with at least 8 characters.');const {data,error}=signup?await this.client.auth.signUp({email,password}):await this.client.auth.signInWithPassword({email,password});if(error)throw error;if(signup&&!data.session)return {confirm:true};this.user=data.user;await this.profile();await this.refreshClan();return {confirm:false};}
  async signout(){if(this.channel)await this.client.removeChannel(this.channel);this.channel=null;await this.client.auth.signOut();this.user=null;this.clan=null;this.members=[];this.connected=false;this.game.peers=[];if(this.game.mode==='clan')this.game.enterFortress();}
- appearance(){const s=this.game.state;return {preset:s.preset,skin:s.skin,hair:s.hair,body:s.body,equipment:s.equipment,inventory:s.inventory.filter(i=>Object.values(s.equipment).includes(i.uid)),fort:{},perks:{},level:s.level,name:s.name};}
+ appearance(){const s=this.game.state;return {...appearanceOf(s),preset:s.preset,skin:s.skin,hair:s.hair,body:s.body,equipment:s.equipment,inventory:s.inventory.filter(i=>Object.values(s.equipment).includes(i.uid)),fort:{},perks:{},level:s.level,name:s.name};}
  async profile(){if(!this.user)return;const s=this.game.state;const {error}=await this.client.from('sd_profiles').upsert({id:this.user.id,name:s.name,appearance:this.appearance(),depth:s.bestDepth,level:s.level,updated_at:new Date().toISOString()});if(error)throw error;}
  async saveCloud(){this.assert();if(!this.user)throw new Error('Sign in to save this journey online.');if(this.saving)return;this.saving=true;try{const snapshot=this.game.snapshot();const {error}=await this.client.from('sd_saves').upsert({user_id:this.user.id,data:snapshot,updated_at:new Date().toISOString()});if(error)throw error;await this.profile();this.game.toast('Cloud save updated','success');}finally{this.saving=false;}}
  async getCloud(){this.assert();if(!this.user)throw new Error('Sign in first.');const {data,error}=await this.client.from('sd_saves').select('data,updated_at').eq('user_id',this.user.id).maybeSingle();if(error)throw error;return data;}

@@ -1,7 +1,8 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {Game} from '../engine.js';
-import {SAVE_KEY,stats,item,buildingCost,freshSave,safeSave} from '../data.js';
+import {SAVE_KEY,stats,item,buildingCost,freshSave,safeSave,appearanceOf} from '../data.js';
+import {characterPose,weaponTransform} from '../rig.js';
 import {createWorld,FORT_POS} from '../world.js';
 const storage=()=>{const data=new Map();return{getItem:k=>data.get(k)||null,setItem:(k,v)=>data.set(k,v),removeItem:k=>data.delete(k)}};
 function game(){const g=new Game(storage());g.paused=false;g.state.created=true;return g;}
@@ -22,3 +23,34 @@ test('unequipping every slot persists without deleting items or restoring a weap
 test('each construction relocates an overlapping player and allows immediate movement',()=>{for(const [key,[x,y]]of Object.entries(FORT_POS)){const g=game();g.state.bank={gold:10000,stone:10000,wood:10000,ember:100,food:0};g.enterFortress();g.p.x=x;g.p.y=y;assert.ok(g.build(key));assert.equal(g.isBlocked(g.p.x,g.p.y),false,key);const before={...g.p};g.move(0,1,.1,stats(g.state));assert.ok(g.p.x!==before.x||g.p.y!==before.y,key);}});
 test('existing trapped saves can escape solid geometry',()=>{const g=game();g.enterFortress();const p=g.world.props.find(p=>p.solid);g.p.x=p.x;g.p.y=p.y;g.move(1,0,.016,stats(g.state));assert.equal(g.isBlocked(g.p.x,g.p.y),false);});
 test('one interaction gathers a resource and duplicate taps cannot grant it again',()=>{const g=game(),n=g.world.nodes.find(n=>n.type==='wood');g.p.x=n.x;g.p.y=n.y;g.interact(n);assert.ok(g.state.bag.wood>=6);const amount=g.state.bag.wood;g.interact(n);assert.equal(g.state.bag.wood,amount);assert.equal(g.available(n),false);});
+
+test('pre-creator saves keep gear, progress, skin, hair color and broad build',()=>{
+ const s=freshSave();for(const key of ['gender','face','hairStyle','hairColor','facialHair','bodyStyle'])delete s[key];
+ Object.assign(s,{name:'Veteran',body:1,hair:3,skin:4,level:9,depth:17,bestDepth:17,fort:{smith:3}});
+ const next=safeSave(s);
+ assert.deepEqual(appearanceOf(next),{gender:'male',face:0,hairStyle:'short',hairColor:3,facialHair:'none',bodyStyle:'muscular',skin:4});
+ assert.deepEqual(next.inventory,s.inventory);assert.deepEqual(next.equipment,s.equipment);
+ assert.equal(next.depth,17);assert.equal(next.fort.smith,3);assert.deepEqual(stats(next),stats(s));
+});
+test('all appearance choices persist without changing equipment or stats',()=>{
+ const g=game(),before=stats(g.state),eq={...g.state.equipment};
+ for(const gender of ['male','female'])for(const bodyStyle of ['thin','average','muscular']){
+  Object.assign(g.state,{gender,bodyStyle,face:3,hairStyle:'braids',hairColor:4,skin:3,facialHair:gender==='male'?'full':'none'});g.save();
+  const next=new Game(g.storage);assert.deepEqual(appearanceOf(next.state),appearanceOf(g.state));
+  assert.deepEqual(next.state.equipment,eq);assert.deepEqual(stats(next.state),before);
+ }
+ assert.deepEqual(appearanceOf({gender:'bad',face:99,hairStyle:'bad',hairColor:-1,bodyStyle:'bad',skin:99}),appearanceOf({}));
+ assert.equal(safeSave({...g.state,gender:'female',facialHair:'full'}).facialHair,'none');
+});
+test('weapon handles stay in the palm during walking and attacks for every body shape',()=>{
+ for(const gender of ['male','female'])for(const bodyStyle of ['thin','average','muscular'])for(const id of ['rust','iron','void','cinder','sun','bow','moonbow','staff','riftstaff']){
+  const s={...freshSave(),gender,bodyStyle,inventory:[item(id,1,'w')],equipment:{weapon:'w'}};
+  for(const t of [0,.07,.12,.21])for(const moving of [false,true]){
+   const pose=characterPose(s,{moving,swing:.24-t},t),tr=weaponTransform(pose);
+   assert.equal(tr.x,pose.hands[1].x);assert.equal(tr.y,pose.hands[1].y);
+   assert.ok(Number.isFinite(tr.angle));
+   if(t===0&&tr.tip){const dx=tr.tip[0]-tr.grip[0],dy=tr.tip[1]-tr.grip[1];assert.ok(dx*Math.sin(tr.angle)+dy*Math.cos(tr.angle)<0,'resting blade points up');}
+   if(pose.kind==='bow')assert.equal(tr.mirror,true,'bow limbs face away from the body');
+  }
+ }
+});

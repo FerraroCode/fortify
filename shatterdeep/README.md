@@ -1,4 +1,4 @@
-# SHATTERDEEP 0.6
+# SHATTERDEEP 0.7
 
 An installable Canvas action RPG served from `/shatterdeep/`. No build step or runtime dependencies are required for solo play. The parent Fortify app is separate.
 
@@ -10,7 +10,7 @@ From this directory: `npm run serve`, then open `http://localhost:4173/`. Run `n
 
 Touch and drag anywhere on the world to place the floating analog joystick. Release to stop. Basic attacks automatically target nearby enemies. Tap the ability buttons to heal, use Rift Burst or your weapon special, and dodge. Tap an interaction prompt once to gather resources or interact. Search the outpost chest, follow the road, clear the Rift Scar, defeat the Hollow Stag, and enter the Deep Rift. Return to Emberhold to bank resources, construct buildings, and prepare equipment.
 
-The implementation includes six appearance presets, visible equipment, four weapon attack behaviors, loot effects, perks, survivor rescues, companions, nine fortress buildings, limited offline production, repeatable depths, encounter saves, export/import, legacy-save migration, and non-destructive death penalties. Later depths add enemy combinations and Realm palettes.
+The implementation includes a male/female appearance editor, visible equipment, four weapon attack behaviors, loot effects, perks, survivor rescues, companions, nine fortress buildings, limited offline production, repeatable depths, encounter saves, export/import, legacy-save migration, and non-destructive death penalties. Later depths add enemy combinations and Realm palettes.
 
 ## Online systems
 
@@ -41,3 +41,14 @@ Original character, prop, and ground artwork generated for SHATTERDEEP. Cinzel a
 - Save format/key remains compatible with 0.5. JavaScript module URLs are versioned to avoid mixing cached releases.
 
 New generated game assets: `assets/gear.webp` (24-cell equipment atlas) and `assets/road.webp` (repeatable cobblestone terrain). Built-in image generation was used; complete asset prompts are recorded in `assets/art-prompts-v06.json`.
+
+## 0.7 character fitting update
+
+- Replaced preset avatars with separate male/female bodies, four faces per gender, seven hairstyles, five hair colors, five skin tones, and optional male facial hair.
+- Thin, average, and muscular proportions resize the torso, shoulder spacing, limbs, and attached equipment. Appearance does not affect combat stats.
+- A shared articulated pose attaches gloves, boots, and weapons to moving hands and feet. Sword and greatsword art is rotated around its actual handle; bows use a forward-facing grip and a two-hand aiming pose.
+- The editor previews plain clothes or equipped gear. Closing without saving leaves the character unchanged.
+- Compact, non-interactive pickup notices sit at the lower left beside the ability controls, with at most two visible at once.
+- Existing saves retain progress and equipment. Old broad builds and hair/skin colors migrate into the new creator. Save key and format remain compatible with 0.5/0.6.
+
+`assets/character-parts.webp` contains generated modular body, face, hair, beard, and hand artwork; its prompt is in `assets/art-prompts-v07.json`. Source-part rectangles and anchors are in `render.js`; proportion and weapon-grip geometry is in `rig.js`. Animation uses a 2D articulated rig with mirrored facing, not directional frame-by-frame sprites.
