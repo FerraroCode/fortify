@@ -1,4 +1,4 @@
-# SHATTERDEEP 0.7
+# SHATTERDEEP 0.8
 
 An installable Canvas action RPG served from `/shatterdeep/`. No build step or runtime dependencies are required for solo play. The parent Fortify app is separate.
 
@@ -52,3 +52,18 @@ New generated game assets: `assets/gear.webp` (24-cell equipment atlas) and `ass
 - Existing saves retain progress and equipment. Old broad builds and hair/skin colors migrate into the new creator. Save key and format remain compatible with 0.5/0.6.
 
 `assets/character-parts.webp` contains generated modular body, face, hair, beard, and hand artwork; its prompt is in `assets/art-prompts-v07.json`. Source-part rectangles and anchors are in `render.js`; proportion and weapon-grip geometry is in `rig.js`. Animation uses a 2D articulated rig with mirrored facing, not directional frame-by-frame sprites.
+
+
+## 0.8 fitting, range and loot update
+
+- Shoulder anchors now come from the actual torso transform. Torso art overlaps the shoulder joints, including on muscular builds, instead of leaving a gap during animation.
+- Hair uses revised scalp placement. Beards use per-face sideburn and mouth anchors; stubble and short beards are clipped to the face silhouette.
+- Bows reach 480 world units and staffs 440, compared with 76 for swords. Encounters appear early enough to use that reach; projectiles and weapon specials reach distant targets too.
+- 35 additional equipment definitions bring the catalogue to 61 items. The new atlas includes 24 distinct weapon designs (five replace shared legacy weapon art), plus 16 armor pieces. Axes cleave, maces stagger, spears reach farther, and daggers attack quickly.
+- Frost, poison, life-steal, chain lightning, faster attacks, vitality and recovery effects support different builds. Loot rolls favor unowned designs and reduce recent repeats.
+- Pack → Salvage spare copies previews items and proceeds before removing duplicates. Equipped items and the best-rated copy of every definition are always retained. Existing gear is never automatically replaced or salvaged.
+- Save format/key stays compatible with previous releases. The new catalogue and atlases are included in the offline cache.
+
+Original art generated with the built-in image tool is saved in `assets/weapons-v08.webp` and `assets/armor-v08.webp`. Prompts are recorded in `assets/art-prompts-v08.json`. Runtime source rectangles exclude adjacent sprites; connected-component masks isolate gloves and boots. The project still uses a 2D articulated character rig.
+
+Validation: 22 engine tests cover ranged hit distances, statuses, varied loot, protected duplicate salvage, migration and existing gameplay. Mobile browser checks cover creation, cancellation, inventory icons, salvage review/confirmation, equipping, touch movement, gathering, all 366 item/body combinations, and offline reload. An installed 0.7 cache upgrades to 0.8 without losing the journey.

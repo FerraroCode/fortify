@@ -1,4 +1,4 @@
-import {safeSave,SAVE_KEY,appearanceOf} from './data.js?v=070';
+import {safeSave,SAVE_KEY,appearanceOf} from './data.js?v=080';
 const URL='https://xbovltvoukrobvjjlemo.supabase.co';
 const KEY='sb_publishable_fHwXDiMLK2bj5gZVU_4Kfg_43VonsAr';
 export class Online{

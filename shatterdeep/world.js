@@ -1,4 +1,4 @@
-import {rng,realmFor} from './data.js?v=070';
+import {rng,realmFor} from './data.js?v=080';
 export const WORLD={w:2000,h:3200};
 export const ROOMS=[
  {id:'outpost',name:'Ruined Outpost',x:1000,y:2910,r:235,kind:'camp'},
